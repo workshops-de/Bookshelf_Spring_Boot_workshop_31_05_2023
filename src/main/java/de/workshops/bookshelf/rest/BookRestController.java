@@ -3,11 +3,13 @@ package de.workshops.bookshelf.rest;
 import de.workshops.bookshelf.domain.Book;
 import de.workshops.bookshelf.domain.BookException;
 import de.workshops.bookshelf.service.BookService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -49,6 +53,16 @@ public class BookRestController {
     @PostMapping("/search")
     public List<Book> searchBooks(@RequestBody BookSearchRequest request) {
         return service.searchBooks(request.getIsbn(), request.getAuthor());
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> createBook(@RequestBody Book book, HttpServletRequest request) {
+        service.createBook(book);
+
+        URI uri = UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))
+                .pathSegment(book.getIsbn())
+                .build().toUri();
+        return ResponseEntity.created(uri).build();
     }
 
     @ExceptionHandler(BookException.class)

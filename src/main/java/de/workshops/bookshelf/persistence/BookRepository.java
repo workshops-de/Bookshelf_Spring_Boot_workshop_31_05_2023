@@ -33,4 +33,9 @@ public class BookRepository {
     public List<Book> getAllBooks() {
         return books;
     }
+
+    public void createBook(Book book) {
+        System.out.println("BookRepository.createBook");
+        System.out.println("book = " + book);
+    }
 }
