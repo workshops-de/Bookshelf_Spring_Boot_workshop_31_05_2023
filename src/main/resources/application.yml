@@ -1,0 +1,9 @@
+application:
+  title: @project.name@
+  version: @project.version@
+  group: @project.groupId@
+
+bookshelf:
+  isbn-lookup:
+    service: https://isbn-lookup.org/search
+  string-value: Hallo
