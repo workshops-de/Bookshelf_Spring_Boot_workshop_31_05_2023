@@ -17,39 +17,24 @@ public class BookService {
     }
 
     public List<Book> getAllBooks() {
-        return repository.getAllBooks();
+        return repository.findAll();
     }
 
     public Book getBookByIsbn(String isbn) throws BookException {
-        return this.repository.getAllBooks().stream()
-                .filter(book -> hasIsbn(book, isbn))
-                .findFirst()
+        return this.repository.findByIsbn(isbn)
                 .orElseThrow(() -> new BookException("Unknown ISBN " + isbn));
     }
 
     public Book searchBookByAuthor(String author) throws BookException {
-        return this.repository.getAllBooks().stream()
-                .filter(book -> hasAuthor(book, author))
-                .findFirst()
+        return this.repository.findByAuthorContains(author)
                 .orElseThrow(() -> new BookException("Unknown author " + author));
     }
 
     public List<Book> searchBooks(String isbn, String author) {
-        return this.repository.getAllBooks().stream()
-                .filter(book -> hasIsbn(book, isbn))
-                .filter(book -> hasAuthor(book, author))
-                .toList();
-    }
-
-    private boolean hasIsbn(Book book, String isbn) {
-        return book.getIsbn().equals(isbn);
-    }
-
-    private boolean hasAuthor(Book book, String author) {
-        return book.getAuthor().contains(author);
+        return this.repository.findByIsbnEqualsOrAuthorContains(isbn, author);
     }
 
     public void createBook(Book book) {
-        repository.createBook(book);
+        repository.save(book);
     }
 }

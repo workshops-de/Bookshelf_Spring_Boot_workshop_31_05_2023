@@ -90,7 +90,7 @@ class BookRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        verify(bookRepository).createBook(any(Book.class));
+        verify(bookRepository).save(any(Book.class));
     }
 
     @TestConfiguration
