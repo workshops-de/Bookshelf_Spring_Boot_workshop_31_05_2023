@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +57,9 @@ public class BookRestController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> createBook(@RequestBody Book book, HttpServletRequest request) {
+        book.setId(null); // in case someone provides an ID - JPA should generate a new ID
         service.createBook(book);
 
         URI uri = UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))

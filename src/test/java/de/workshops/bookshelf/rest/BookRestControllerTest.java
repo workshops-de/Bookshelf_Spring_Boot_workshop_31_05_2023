@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import de.workshops.bookshelf.domain.Book;
 import de.workshops.bookshelf.persistence.BookRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -21,7 +23,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class BookRestControllerTest {
 
     @Autowired
@@ -90,7 +92,10 @@ class BookRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        verify(bookRepository).save(any(Book.class));
+        ArgumentCaptor<Book> newBookCaptor = ArgumentCaptor.forClass(Book.class);
+        verify(bookRepository).save(newBookCaptor.capture());
+
+        bookRepository.delete(newBookCaptor.getValue());
     }
 
     @TestConfiguration

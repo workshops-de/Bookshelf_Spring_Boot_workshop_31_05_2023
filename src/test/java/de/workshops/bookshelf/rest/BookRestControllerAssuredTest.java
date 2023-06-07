@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookRestControllerAssuredTest {
 
     @LocalServerPort
@@ -26,6 +26,7 @@ class BookRestControllerAssuredTest {
     void testWithRestAssured() {
         RestAssured.given().
                     log().all().
+                    auth().basic("user", "password").
                 when().
                     get("/book").
                 then().
@@ -36,7 +37,7 @@ class BookRestControllerAssuredTest {
 
     @Test
     void TestRestTemplate() {
-        TestRestTemplate rest = new TestRestTemplate();
+        TestRestTemplate rest = new TestRestTemplate().withBasicAuth("user", "password");
         Book[] books = rest.getForObject("http://localhost:" + port + "/book", Book[].class);
         assertThat(books).hasSize(3);
     }
